@@ -111,12 +111,15 @@ export async function middleware(
     clearTimeout(timeout);
 
     if (didTimeout) return true;
-
     const err = Array.from(error as WebhookEventHandlerError)[0];
-    const errorMessage = err.message
-      ? `${err.name}: ${err.message}`
-      : "Error: An Unspecified error occurred";
-    response.statusCode = typeof err.status !== "undefined" ? err.status : 500;
+
+    let errorMessage = "Error: An Unspecified error occurred"
+    if (err) {
+      if (err.name && err.message) {
+        errorMessage = `${err.name}: ${err.message}`;
+      }
+      response.statusCode = typeof err.status !== "undefined" ? err.status : 500;
+    }
 
     options.log.error(error);
 
